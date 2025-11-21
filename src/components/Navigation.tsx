@@ -18,8 +18,8 @@ export function Navigation({ currentView, onViewChange, onNewOrder }: Navigation
               <span className="text-white"></span>
             </div>
             <div>
-              <h1 className="text-orange-600">Panadería Bollería Pedro Rodriguez Barrios</h1>
-              <p className="text-orange-500 text-xs">Gestión de Pedidos de Roscones</p>
+              <h1 className="text-orange-600">Gestión de Pedidos de Roscones</h1>
+              <p className="text-orange-500 text-xs">Panadería Bollería Pedro Rodriguez Barrios</p>
             </div>
           </div>
 
