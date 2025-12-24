@@ -10,16 +10,16 @@ interface NavigationProps {
 
 export function Navigation({ currentView, onViewChange, onNewOrder }: NavigationProps) {
   return (
-    <header className="bg-white border-b border-orange-200 sticky top-0 z-50 shadow-sm">
+    <header className="bg-white border-b border-orange-200 sticky top-0 z-50 shadow-sm py-3">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-full flex items-center justify-center">
               <span className="text-white"></span>
             </div>
-            <div>
-              <h1 className="text-orange-600">Gestión de Pedidos de Roscones</h1>
-              <p className="text-orange-500 text-xs">Panadería Bollería Pedro Rodriguez Barrios</p>
+            <div className="leading-tight">
+              <h1 className="text-orange-600 m-0">Gestión de Pedidos de Roscones</h1>
+              <p className="text-orange-500 text-xs mt-0.5 m-0">Panadería Bollería Pedro Rodriguez Barrios</p>
             </div>
           </div>
 
@@ -45,20 +45,12 @@ export function Navigation({ currentView, onViewChange, onNewOrder }: Navigation
             />
             <button
               onClick={onNewOrder}
-              className="ml-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all flex items-center gap-2 shadow-md"
+              className="btn btn-lg ml-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all flex items-center gap-2 shadow-md"
             >
               <Plus className="w-5 h-5" />
               Nuevo Pedido
             </button>
           </nav>
-
-          {/* Mobile Add Button */}
-          <button
-            onClick={onNewOrder}
-            className="md:hidden p-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all shadow-md"
-          >
-            <Plus className="w-6 h-6" />
-          </button>
         </div>
 
         {/* Mobile Navigation */}

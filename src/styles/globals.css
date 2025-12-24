@@ -187,3 +187,85 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Fix: ensure page can scroll when Ionic styles are present */
+html, body, #root, ion-app {
+  height: auto !important;
+  min-height: 100%;
+  overflow: auto !important;
+}
+
+/* Make IonApp children visible and allow normal document scroll */
+ion-app > * {
+  overflow: visible !important;
+}
+
+/* Ensure ion-content background is transparent so app background shows */
+ion-content {
+  --background: transparent !important;
+  background: transparent !important;
+}
+
+/* Restore sensible default appearance for native buttons that may be overridden by Ionic resets */
+@layer base {
+  button {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem 1rem !important; /* default padding */
+    border-radius: 0.5rem !important;
+    /* Do not force background so Tailwind bg-* classes can apply */
+    color: inherit !important;
+  }
+
+  button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255,159,67,0.12);
+  }
+
+  /* Small button sizes used in modals and filters */
+  button.small {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem;
+    border-radius: 0.375rem !important;
+  }
+
+  /* Button utility to guarantee visible button shape when bg-* classes are missing */
+  .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    border: 1px solid var(--border) !important;
+    /* Do not override background so Tailwind bg-* classes can apply */
+    color: inherit !important;
+  }
+
+  .btn.small {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* If the button does not have a Tailwind bg-* class, give it a default white background */
+  button.btn:not([class*="bg-"]) {
+    background: var(--card) !important;
+  }
+
+  /* Large button variant */
+  .btn-lg {
+    padding: 0.75rem 1.25rem !important; /* larger padding */
+    font-size: 1rem !important; /* slightly larger text */
+    border-radius: 0.75rem !important; /* more rounded */
+  }
+
+  .btn-lg.small {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.95rem !important;
+  }
+}
+

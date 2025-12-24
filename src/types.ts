@@ -14,7 +14,7 @@ export interface Order {
   createdAt: string;
 }
 
-export type RosconSize = 'pequeño' | 'mediano' | 'grande' | 'familiar';
+export type RosconSize = 'mini' | 'pequeño' | 'mediano' | 'grande';
 
 export type RosconFilling = 'sin relleno' | 'nata' | 'trufa' | 'crema' | 'chocolate' | 'nata, trufa' |  'nata, crema' |  'nata, chocolate' |  'trufa, crema' |  'trufa, chocolate' |  'crema, chocolate' | 'nata, trufa, crema' |  'nata, trufa, chocolate' |  'nata, crema, chocolate' |  'trufa, crema, chocolate';
 
@@ -22,7 +22,7 @@ export type OrderStatus = 'pendiente' | 'preparando' | 'listo' | 'entregado';
 
 export type PaymentMethod = 'efectivo' | 'tarjeta' | 'transferencia' | 'bizum';
 
-export const ROSCON_SIZES: RosconSize[] = ['pequeño', 'mediano', 'grande', 'familiar'];
+export const ROSCON_SIZES: RosconSize[] = ['mini', 'pequeño', 'mediano', 'grande'];
 
 export const ROSCON_FILLINGS: RosconFilling[] = ['sin relleno', 'nata', 'trufa', 'crema', 'chocolate', 'nata, trufa', 'nata, crema', 'nata, chocolate', 'trufa, crema', 'trufa, chocolate', 'crema, chocolate', 'nata, trufa, crema',  'nata, trufa, chocolate',  'nata, crema, chocolate',  'trufa, crema, chocolate'];
 

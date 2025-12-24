@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Order, ROSCON_SIZES, ROSCON_FILLINGS } from '../types';
-import { Search, Filter, Edit2, Trash2, Phone, Calendar, CreditCard, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Filter, Edit2, Trash2, Phone, Calendar, CreditCard, CheckCircle, XCircle, Printer } from 'lucide-react';
+import { printTextBluetooth } from '../utils/bluetooth';
 
 interface OrderListProps {
   orders: Order[];
@@ -116,7 +117,7 @@ export function OrderList({ orders, onEdit, onDelete, onUpdateStatus }: OrderLis
           <div className="flex gap-2">
             <button
               onClick={() => setSortBy('deliveryDate')}
-              className={`px-3 py-1 rounded-lg transition-colors ${
+              className={`btn btn-lg px-3 py-1 rounded-lg transition-colors ${
                 sortBy === 'deliveryDate'
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -126,7 +127,7 @@ export function OrderList({ orders, onEdit, onDelete, onUpdateStatus }: OrderLis
             </button>
             <button
               onClick={() => setSortBy('customer')}
-              className={`px-3 py-1 rounded-lg transition-colors ${
+              className={`btn btn-lg px-3 py-1 rounded-lg transition-colors ${
                 sortBy === 'customer'
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -136,7 +137,7 @@ export function OrderList({ orders, onEdit, onDelete, onUpdateStatus }: OrderLis
             </button>
             <button
               onClick={() => setSortBy('date')}
-              className={`px-3 py-1 rounded-lg transition-colors ${
+              className={`btn btn-lg px-3 py-1 rounded-lg transition-colors ${
                 sortBy === 'date'
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -300,7 +301,7 @@ function OrderCard({ order, onEdit, onDelete, onUpdateStatus }: OrderCardProps) 
               {order.status !== 'preparando' && (
                 <button
                   onClick={() => onUpdateStatus(order.id, 'preparando')}
-                  className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-xs"
+                  className="btn small px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-xs"
                 >
                   En preparación
                 </button>
@@ -308,14 +309,14 @@ function OrderCard({ order, onEdit, onDelete, onUpdateStatus }: OrderCardProps) 
               {order.status !== 'listo' && (
                 <button
                   onClick={() => onUpdateStatus(order.id, 'listo')}
-                  className="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs"
+                  className="btn small px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs"
                 >
                   Listo
                 </button>
               )}
               <button
                 onClick={() => onUpdateStatus(order.id, 'entregado')}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs"
+                className="btn small px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs"
               >
                 Entregado
               </button>
@@ -324,17 +325,34 @@ function OrderCard({ order, onEdit, onDelete, onUpdateStatus }: OrderCardProps) 
         )}
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <button
+            onClick={async () => {
+              const text = `PEDIDO\nCliente: ${order.customerName}\nTel: ${order.phone}\nFecha: ${order.deliveryDate}\nTamaño: ${order.size}\nRelleno: ${order.filling}\nCantidad: ${order.quantity}\nPrecio: €${order.price.toFixed(2)}${order.notes ? `\nNotas: ${order.notes}` : ''}\n`;
+              try {
+                await printTextBluetooth(text);
+              } catch (e: any) {
+                alert('Error al imprimir: ' + (e && e.message ? e.message : String(e)));
+              }
+            }}
+            className="shrink-0 h-10 px-4 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors flex items-center justify-center gap-2"
+            aria-label="Imprimir pedido"
+          >
+            <Printer className="w-4 h-4" />
+            Imprimir
+          </button>
+
           <button
             onClick={() => onEdit(order)}
-            className="flex-1 px-4 py-2 bg-orange-50 text-orange-600 rounded-lg hover:bg-orange-100 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 min-w-0 h-10 px-4 bg-orange-50 text-orange-600 rounded-lg hover:bg-orange-100 transition-colors flex items-center justify-center gap-2"
           >
             <Edit2 className="w-4 h-4" />
             Editar
           </button>
           <button
             onClick={() => onDelete(order.id)}
-            className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center"
+            className="shrink-0 h-10 px-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center"
+            aria-label="Eliminar pedido"
           >
             <Trash2 className="w-4 h-4" />
           </button>

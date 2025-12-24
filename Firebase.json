@@ -1,0 +1,19 @@
+{
+    "pedidos":{
+        "id_pedido":"14s4",
+        "nombre":"s",
+        "id_roscon":"1m",
+        "cantidad":"l",
+        "Precio_total":"12€",
+        "estado":"p",
+        "nota":"hamburguesa",
+        "fecha_pedido":"25/8/2014",
+        "fecha_entrega":"22/12/2025"
+    },
+    "roscon":{
+        "id_roscon":"1m",
+        "tamaño":"s",
+        "relleno":"m",
+        "precio":"1€"
+    }
+}

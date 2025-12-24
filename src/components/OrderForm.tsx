@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Order, ROSCON_SIZES, ROSCON_FILLINGS, ORDER_STATUS, PAYMENT_METHODS } from '../types';
 import { X } from 'lucide-react';
+import { getUnitPrice } from '../data/prices';
 
 interface OrderFormProps {
   order: Order | null;
@@ -44,11 +45,27 @@ export function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
   }, [order]);
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [field]: value };
+      return next;
+    });
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
+
+  // Auto-calculate price based on size, filling and quantity
+  useEffect(() => {
+    const unit = getUnitPrice(formData.filling as any, formData.size as any);
+    const qty = parseInt(String(formData.quantity)) || 0;
+    const total = unit * qty;
+    if (!isNaN(total) && total > 0) {
+      setFormData(prev => ({ ...prev, price: total.toFixed(2) }));
+    } else {
+      setFormData(prev => ({ ...prev, price: '' }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.size, formData.filling, formData.quantity]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -229,12 +246,14 @@ export function OrderForm({ order, onSave, onCancel }: OrderFormProps) {
                   step="0.01"
                   value={formData.price}
                   onChange={(e) => handleChange('price', e.target.value)}
+                  readOnly
                   className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                     errors.price ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="0.00"
                 />
               </div>
+              <p className="mt-1 text-sm text-gray-600">Precio calculado automáticamente por tamaño y relleno</p>
               {errors.price && (
                 <p className="mt-1 text-red-600">{errors.price}</p>
               )}

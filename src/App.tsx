@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { IonApp, IonContent } from '@ionic/react';
 import { Dashboard } from './components/Dashboard';
 import { OrderList } from './components/OrderList';
 import { OrderForm } from './components/OrderForm';
@@ -41,11 +42,26 @@ export default function App() {
           id: '2',
           customerName: 'Juan Pérez',
           phone: '677234567',
-          size: 'familiar',
+          size: 'grande',
           filling: 'trufa',
           quantity: 1,
-          price: 35.00,
+          price: 25.00,
           deliveryDate: '2025-01-06',
+          notes: '',
+          status: 'pendiente',
+          paid: false,
+          paymentMethod: null,
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: '4',
+          customerName: 'Marta Ruiz',
+          phone: '600111222',
+          size: 'mini',
+          filling: 'sin relleno',
+          quantity: 6,
+          price: 30.00,
+          deliveryDate: '2025-01-07',
           notes: '',
           status: 'pendiente',
           paid: false,
@@ -120,47 +136,51 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-50">
-      <Navigation 
-        currentView={currentView} 
-        onViewChange={(view) => {
-          setCurrentView(view);
-          setShowOrderForm(false);
-          setEditingOrder(null);
-        }}
-        onNewOrder={handleNewOrder}
-      />
-      
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
-        {currentView === 'dashboard' && (
-          <Dashboard orders={orders} onViewOrders={() => setCurrentView('orders')} />
-        )}
+    <IonApp>
+      <IonContent fullscreen>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-50">
+        <Navigation 
+          currentView={currentView} 
+          onViewChange={(view) => {
+            setCurrentView(view);
+            setShowOrderForm(false);
+            setEditingOrder(null);
+          }}
+          onNewOrder={handleNewOrder}
+        />
         
-        {currentView === 'orders' && (
-          <>
-            {showOrderForm ? (
-              <OrderForm
-                order={editingOrder}
-                onSave={editingOrder ? handleUpdateOrder : handleCreateOrder}
-                onCancel={handleCancelForm}
-              />
-            ) : (
-              <OrderList
-                orders={orders}
-                onEdit={handleEditOrder}
-                onDelete={handleDeleteOrder}
-                onUpdateStatus={(id, status) => {
-                  setOrders(orders.map(o => o.id === id ? { ...o, status } : o));
-                }}
-              />
-            )}
-          </>
-        )}
-        
-        {currentView === 'reports' && (
-          <Reports orders={orders} />
-        )}
-      </main>
-    </div>
+        <main className="container mx-auto px-4 py-6 max-w-7xl">
+          {currentView === 'dashboard' && (
+            <Dashboard orders={orders} onViewOrders={() => setCurrentView('orders')} />
+          )}
+          
+          {currentView === 'orders' && (
+            <>
+              {showOrderForm ? (
+                <OrderForm
+                  order={editingOrder}
+                  onSave={editingOrder ? handleUpdateOrder : handleCreateOrder}
+                  onCancel={handleCancelForm}
+                />
+              ) : (
+                <OrderList
+                  orders={orders}
+                  onEdit={handleEditOrder}
+                  onDelete={handleDeleteOrder}
+                  onUpdateStatus={(id, status) => {
+                    setOrders(orders.map(o => o.id === id ? { ...o, status } : o));
+                  }}
+                />
+              )}
+            </>
+          )}
+          
+          {currentView === 'reports' && (
+            <Reports orders={orders} />
+          )}
+        </main>
+      </div>
+      </IonContent>
+    </IonApp>
   );
 }

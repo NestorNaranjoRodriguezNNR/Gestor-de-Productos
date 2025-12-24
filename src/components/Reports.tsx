@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Order, ROSCON_SIZES, ROSCON_FILLINGS } from '../types';
 import { BarChart3, Download, TrendingUp, Calendar, DollarSign } from 'lucide-react';
 
@@ -67,9 +67,13 @@ export function Reports({ orders }: ReportsProps) {
     };
   }, [orders]);
 
-  const handleExportCSV = () => {
+  const [selectOpen, setSelectOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
+
+  const handleExportCSV = (filterOrders?: typeof orders) => {
+    const target = filterOrders || orders;
     const headers = ['Cliente', 'Teléfono', 'Tamaño', 'Relleno', 'Cantidad', 'Precio', 'Fecha Entrega', 'Estado', 'Pagado', 'Método Pago', 'Notas'];
-    const rows = orders.map(o => [
+    const rows = target.map(o => [
       o.customerName,
       o.phone,
       o.size,
@@ -97,28 +101,28 @@ export function Reports({ orders }: ReportsProps) {
     window.URL.revokeObjectURL(url);
   };
 
-  const handleExportProduction = () => {
+  const generateProductionText = () => {
     let content = 'PLAN DE PRODUCCIÓN DE ROSCONES\n';
     content += '='.repeat(50) + '\n\n';
-    
+
     content += 'PRODUCCIÓN PENDIENTE POR TAMAÑO:\n';
     Object.entries(reportData.productionBySize).forEach(([size, count]) => {
       if (count > 0) {
         content += `${size.toUpperCase()}: ${count} unidades\n`;
       }
     });
-    
+
     content += '\nPRODUCCIÓN PENDIENTE POR RELLENO:\n';
     Object.entries(reportData.productionByFilling).forEach(([filling, count]) => {
       if (count > 0) {
         content += `${filling.toUpperCase()}: ${count} unidades\n`;
       }
     });
-    
+
     content += '\n' + '='.repeat(50) + '\n';
     content += 'MATRIZ DE PRODUCCIÓN (Tamaño x Relleno):\n';
     content += '='.repeat(50) + '\n\n';
-    
+
     ROSCON_SIZES.forEach(size => {
       let hasProduction = false;
       let line = `${size.toUpperCase()}:\n`;
@@ -134,6 +138,11 @@ export function Reports({ orders }: ReportsProps) {
       }
     });
 
+    return content;
+  };
+
+  const handleExportProduction = () => {
+    const content = generateProductionText();
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -143,29 +152,88 @@ export function Reports({ orders }: ReportsProps) {
     window.URL.revokeObjectURL(url);
   };
 
+  // Bluetooth printing moved to `src/utils/bluetooth.ts` and usage has been moved to the Orders section (OrderList).
+
+
+
+
+
+
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h2 className="text-gray-900 mb-2">Plan de Producción</h2>
           <p className="text-gray-600">Informe detallado de roscones a producir</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button
             onClick={handleExportProduction}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all flex items-center gap-2 shadow-md"
+            className="btn btn-lg px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all flex items-center gap-2 shadow-md"
           >
             <Download className="w-5 h-5" />
             Plan Producción
           </button>
+
+
+
           <button
-            onClick={handleExportCSV}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            onClick={() => {
+              const selected = Object.keys(selectedIds).filter(id => selectedIds[id]);
+              if (selected.length === 0) {
+                setSelectOpen(true);
+              } else {
+                const target = orders.filter(o => selected.includes(o.id));
+                handleExportCSV(target);
+              }
+            }}
+            className="btn btn-lg px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
           >
             <Download className="w-5 h-5" />
             Exportar CSV
           </button>
         </div>
+
+        {/* Selector modal (centered) */}
+        {selectOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setSelectOpen(false)}></div>
+            <div className="relative bg-white rounded-lg w-full max-w-2xl p-6 shadow-lg z-50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Seleccionar Pedidos</h3>
+                <div className="flex gap-2">
+                  <button onClick={() => { const all: Record<string, boolean> = {}; orders.forEach(o => all[o.id] = true); setSelectedIds(all); }} className="btn small px-3 py-2 bg-gray-100 rounded">Seleccionar todos</button>
+                  <button onClick={() => { setSelectedIds({}); }} className="btn small px-3 py-2 bg-gray-100 rounded">Limpiar</button>
+                  <button onClick={() => setSelectOpen(false)} className="btn small px-3 py-2 bg-red-50 rounded">Cerrar</button>
+                </div>
+              </div>
+
+              <div className="max-h-64 overflow-y-auto border-t border-gray-100 pt-3">
+                {orders.map(o => (
+                  <label key={o.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded">
+                    <input type="checkbox" checked={!!selectedIds[o.id]} onChange={(e) => setSelectedIds(prev => ({ ...prev, [o.id]: e.target.checked }))} />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{o.customerName} — {o.quantity} × {o.size} ({o.filling})</div>
+                      <div className="text-xs text-gray-500">{o.phone} • {o.deliveryDate} • €{o.price.toFixed(2)}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              <div className="flex gap-1 mt-4 items-center">
+                <div className="flex gap-1">
+                  <button onClick={() => { const selected = Object.keys(selectedIds).filter(id => selectedIds[id]); if (selected.length === 0) { alert('Selecciona al menos un pedido'); return; } handleExportCSV(orders.filter(o => selected.includes(o.id))); }} className="btn small px-3 py-2 bg-green-600 text-white rounded">Exportar CSV</button>
+                </div>
+                <div className="flex-1" />
+                <button onClick={() => { setSelectOpen(false); }} className="btn small px-3 py-2 bg-gray-100 rounded">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
       </div>
 
       {/* Summary Cards */}
