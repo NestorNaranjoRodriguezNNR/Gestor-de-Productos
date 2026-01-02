@@ -19,7 +19,9 @@ export function Navigation({ currentView, onViewChange, onNewOrder }: Navigation
             </div>
             <div className="leading-tight">
               <h1 className="text-orange-600 m-0">Gestión de Pedidos de Roscones</h1>
-              <p className="text-orange-500 text-xs mt-0.5 m-0">Panadería Bollería Pedro Rodriguez Barrios</p>
+              <p className="text-orange-500 text-xs mt-0.5 m-0">
+                Panadería Bollería Pedro Rodriguez Barrios
+              </p>
             </div>
           </div>
 
@@ -43,11 +45,13 @@ export function Navigation({ currentView, onViewChange, onNewOrder }: Navigation
               active={currentView === 'reports'}
               onClick={() => onViewChange('reports')}
             />
+
+            {/* Desktop Nuevo Pedido */}
             <button
               onClick={onNewOrder}
-              className="btn btn-lg ml-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all flex items-center gap-2 shadow-md"
+              className="ml-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all flex items-center gap-2 shadow-md"
             >
-              <Plus className="w-5 h-5" />
+              <Plus />
               Nuevo Pedido
             </button>
           </nav>
@@ -78,6 +82,17 @@ export function Navigation({ currentView, onViewChange, onNewOrder }: Navigation
           />
         </nav>
       </div>
+
+      {/* Mobile Nuevo Pedido Button */}
+      <div className="md:hidden fixed bottom-4 right-4 z-50">
+        <button
+          onClick={onNewOrder}
+          className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-full shadow-lg hover:from-orange-600 hover:to-yellow-600 transition-all"
+        >
+          <Plus className="w-5 h-5" />
+          Nuevo Pedido
+        </button>
+      </div>
     </header>
   );
 }
@@ -97,8 +112,8 @@ function NavButton({ icon, label, active, onClick, mobile }: NavButtonProps) {
       className={`
         ${mobile ? 'flex-col py-1 px-4' : 'flex-row py-2 px-4'}
         flex items-center justify-center gap-2 rounded-lg transition-colors
-        ${active 
-          ? 'bg-orange-50 text-orange-600' 
+        ${active
+          ? 'bg-orange-50 text-orange-600'
           : 'text-gray-600 hover:bg-orange-50/50'
         }
       `}

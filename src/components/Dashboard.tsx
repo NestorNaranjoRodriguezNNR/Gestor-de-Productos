@@ -10,7 +10,7 @@ export function Dashboard({ orders, onViewOrders }: DashboardProps) {
   const totalOrders = orders.length;
   const pendingOrders = orders.filter(o => o.status === 'pendiente' || o.status === 'preparando');
   const totalRevenue = orders.reduce((sum, o) => sum + o.price, 0);
-  const totalRoscones = orders.reduce((sum, o) => sum + o.quantity, 0);
+const totalRoscones = orders.reduce((sum, o) => sum + (o.quantity || 0), 0);
   const paidOrders = orders.filter(o => o.paid).length;
   const unpaidOrders = orders.filter(o => !o.paid).length;
   const unpaidAmount = orders.filter(o => !o.paid).reduce((sum, o) => sum + o.price, 0);
@@ -50,15 +50,17 @@ export function Dashboard({ orders, onViewOrders }: DashboardProps) {
 
   // Calculate roscones by size
   const rosconesbySize = orders.reduce((acc, order) => {
-    acc[order.size] = (acc[order.size] || 0) + order.quantity;
+  const key = order.size ?? 'desconocido'; // valor por defecto si undefined
+  acc[key] = (acc[key] || 0) + (order.quantity || 0);
+  return acc;
+  }, {} as Record<string, number>);
+  // Calculate roscones by filling
+  const rosconesByFilling = orders.reduce((acc, order) => {
+    const key = order.filling ?? 'desconocido'; // valor por defecto si undefined
+    acc[key] = (acc[key] || 0) + (order.quantity || 0);
     return acc;
   }, {} as Record<string, number>);
 
-  // Calculate roscones by filling
-  const rosconesByFilling = orders.reduce((acc, order) => {
-    acc[order.filling] = (acc[order.filling] || 0) + order.quantity;
-    return acc;
-  }, {} as Record<string, number>);
 
   return (
     <div className="space-y-6">

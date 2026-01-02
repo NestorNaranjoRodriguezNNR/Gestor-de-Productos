@@ -5,7 +5,7 @@ import { OrderList } from './components/OrderList';
 import { OrderForm } from './components/OrderForm';
 import { Reports } from './components/Reports';
 import { Navigation } from './components/Navigation';
-import { Order } from './types';
+import { Order, OrderInput } from './types';
 
 type View = 'dashboard' | 'orders' | 'reports';
 
@@ -96,21 +96,34 @@ export default function App() {
     }
   }, [orders]);
 
-  const handleCreateOrder = (order: Omit<Order, 'id' | 'createdAt'>) => {
+  const handleCreateOrder = (orderInput: OrderInput) => {
     const newOrder: Order = {
-      ...order,
+      ...orderInput,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
+
     setOrders([...orders, newOrder]);
     setShowOrderForm(false);
   };
 
-  const handleUpdateOrder = (order: Order) => {
-    setOrders(orders.map(o => o.id === order.id ? order : o));
+
+  const handleUpdateOrder = (orderInput: OrderInput) => {
+    if (!editingOrder) return;
+
+    const updatedOrder: Order = {
+      ...editingOrder,
+      ...orderInput,
+    };
+
+    setOrders(
+      orders.map(o => o.id === updatedOrder.id ? updatedOrder : o)
+    );
+
     setEditingOrder(null);
     setShowOrderForm(false);
   };
+
 
   const handleDeleteOrder = (id: string) => {
     if (confirm('¿Estás seguro de que quieres eliminar este pedido?')) {

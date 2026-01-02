@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Order, ROSCON_SIZES, ROSCON_FILLINGS } from '../types';
 import { Search, Filter, Edit2, Trash2, Phone, Calendar, CreditCard, CheckCircle, XCircle, Printer } from 'lucide-react';
-import { printTextBluetooth } from '../utils/bluetooth';
+import { descargarPedidoPdf } from '../utils/descargarPedidoPdf';
+
 
 interface OrderListProps {
   orders: Order[];
@@ -328,19 +329,59 @@ function OrderCard({ order, onEdit, onDelete, onUpdateStatus }: OrderCardProps) 
         <div className="flex gap-2 items-center">
           <button
             onClick={async () => {
-              const text = `PEDIDO\nCliente: ${order.customerName}\nTel: ${order.phone}\nFecha: ${order.deliveryDate}\nTamaño: ${order.size}\nRelleno: ${order.filling}\nCantidad: ${order.quantity}\nPrecio: €${order.price.toFixed(2)}${order.notes ? `\nNotas: ${order.notes}` : ''}\n`;
+              const lineas: string[] = [];
+              lineas.push('PEDIDO');
+              lineas.push('----------------');
+              lineas.push('Cliente:');
+              lineas.push(order.customerName);
+              lineas.push(`Tel: ${order.phone}`);
+              lineas.push(`Fecha: ${order.deliveryDate}`);
+              lineas.push('');
+
+              // PRODUCTOS
+              lineas.push('PRODUCTOS');
+              lineas.push('----------------');
+
+              if (order.items && order.items.length > 0) {
+                order.items.forEach((item, idx) => {
+                  lineas.push(`${idx + 1}) Roscón - ${item.quantity} unidad(es)`);
+                  lineas.push(`   Tamaño: ${item.size}`);
+                  lineas.push(`   Relleno: ${item.filling}`);
+                  lineas.push(`   Precio: €${item.unitPrice.toFixed(2)}`);
+                  lineas.push(`   Total: €${item.total.toFixed(2)}`);
+                  lineas.push('');
+                });
+              } else {
+                // Pedido antiguo
+                lineas.push('1) Roscón');
+                lineas.push(`   Tamaño: ${order.size}`);
+                lineas.push(`   Relleno: ${order.filling}`);
+                lineas.push(`   Cantidad: ${order.quantity}`);
+                lineas.push('');
+              }
+
+              lineas.push('----------------');
+              lineas.push(`TOTAL: €${order.price.toFixed(2)}`);
+              if (order.notes) {
+                lineas.push('');
+                lineas.push('Notas:');
+                lineas.push(order.notes);
+              }
+
               try {
-                await printTextBluetooth(text);
+                await descargarPedidoPdf(
+                  lineas,
+                  `pedido_${order.customerName}_${order.id}`
+                );
               } catch (e: any) {
-                alert('Error al imprimir: ' + (e && e.message ? e.message : String(e)));
+                alert('Error al descargar: ' + (e?.message || String(e)));
               }
             }}
-            className="shrink-0 h-10 px-4 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors flex items-center justify-center gap-2"
-            aria-label="Imprimir pedido"
           >
-            <Printer className="w-4 h-4" />
-            Imprimir
+            Descargar
           </button>
+
+
 
           <button
             onClick={() => onEdit(order)}

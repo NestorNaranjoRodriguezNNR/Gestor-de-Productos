@@ -43,6 +43,10 @@ repositories {
     }
 }
 
+configurations.all {
+    exclude group: 'com.android.support', module: 'support-v4'
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"

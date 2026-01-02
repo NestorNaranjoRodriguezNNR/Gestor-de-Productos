@@ -14,6 +14,6 @@ Estructura relevante del proyecto:
 - `src/components/product-assets` — utilidades relacionadas con imágenes (antes `figma`).
 - `src/components/ui` — biblioteca de componentes visuales y atómicos.
 - `src/index.css` y `src/styles/globals.css` — estilos globales.
-
-Contacto / referencias:
-- Diseño original (Figma): https://www.figma.com/design/1THqf4P2Hwpk96QK3IGtpU/Gesti%C3%B3n-de-Productos-App  
+ npm run build
+ npx cap sync android
+ npx cap open android
